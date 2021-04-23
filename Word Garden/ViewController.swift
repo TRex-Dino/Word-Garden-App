@@ -85,20 +85,35 @@ class ViewController: UIViewController {
         wordsInGameLabel.text = "Words in Game: \(wordsToGuess.count)"
     }
     
+    func drawFlowerAndPlaySound(currentLetterGuessed: String) {
+        //update image, if needed, and keep track of wrong guesses
+        if wordToGuess.contains(currentLetterGuessed) == false {
+            wrongGuessesRemaining = wrongGuessesRemaining - 1
+            
+            UIView.transition(with: flowerImageView,
+                              duration: 0.5,
+                              options: .transitionCrossDissolve,
+                              animations: {self.flowerImageView.image = UIImage(named: "wilt\(self.wrongGuessesRemaining)")})
+            { (_) in
+                // TO DO: change to next flower
+                self.flowerImageView.image = UIImage(named: "flower\(self.wrongGuessesRemaining)")
+            }
+            
+            playSound(name: "incorrect")
+        } else {
+            playSound(name: "correct")
+        }
+    }
+    
     func guessALetter() {
         //get current letter guessed and add it to all lettersGuessed
         let currentLetterGuessed = guessedLetterTextField.text ?? ""
         lettersGuessed = lettersGuessed + currentLetterGuessed
         
         formatRevealedWord()
-        //update image, if needed, and keep track of wrong guesses
-        if wordToGuess.contains(currentLetterGuessed) == false {
-            wrongGuessesRemaining = wrongGuessesRemaining - 1
-            flowerImageView.image = UIImage(named: "flower\(wrongGuessesRemaining)")
-            playSound(name: "incorrect")
-        } else {
-            playSound(name: "correct")
-        }
+
+        drawFlowerAndPlaySound(currentLetterGuessed: currentLetterGuessed)
+        
         //update gameStatusMessageLabel
         guessCount += 1
         let guesses = (guessCount == 1 ? "Guess" : "Guesses")
