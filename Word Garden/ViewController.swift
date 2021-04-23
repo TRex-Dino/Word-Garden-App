@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 class ViewController: UIViewController {
 
@@ -34,6 +35,7 @@ class ViewController: UIViewController {
     var wordsGuessedCount = 0
     var wordsMissedCount = 0
     var guessCount = 0
+    var audioPlayer: AVAudioPlayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,6 +95,9 @@ class ViewController: UIViewController {
         if wordToGuess.contains(currentLetterGuessed) == false {
             wrongGuessesRemaining = wrongGuessesRemaining - 1
             flowerImageView.image = UIImage(named: "flower\(wrongGuessesRemaining)")
+            playSound(name: "incorrect")
+        } else {
+            playSound(name: "correct")
         }
         //update gameStatusMessageLabel
         guessCount += 1
@@ -103,10 +108,12 @@ class ViewController: UIViewController {
         if wordBeingRevealedLabel.text!.contains("_") == false {
             gameStatusMessageLabel.text = "You've guessed it! It took you \(guessCount) guesses to guess the word."
             wordsGuessedCount += 1
+            playSound(name: "word-guessed")
             updateAfterWinsOrLose()
         } else if wrongGuessesRemaining == 0 {
             gameStatusMessageLabel.text = "So sorry. You're all out of guesses"
             wordsMissedCount += 1
+            playSound(name: "word-not-guessed")
             updateAfterWinsOrLose()
         }
         
@@ -116,8 +123,21 @@ class ViewController: UIViewController {
         }
     }
     
+    func playSound(name: String) {
+        if let sound = NSDataAsset(name: name) {
+            do {
+                try audioPlayer = AVAudioPlayer(data: sound.data)
+                audioPlayer.play()
+            } catch {
+                print("Error \(error.localizedDescription)")
+            }
+        } else {
+            print("Error with data \(name)")
+        }
+    }
+    
     @IBAction func guessedLetterFieldChanged(_ sender: UITextField) {
-        sender.text = String(sender.text?.last ?? " ").trimmingCharacters(in: .whitespaces)
+        sender.text = String(sender.text?.last ?? " ").trimmingCharacters(in: .whitespaces).uppercased()
         guessLetterButton.isEnabled = !(sender.text!.isEmpty)
     }
     
