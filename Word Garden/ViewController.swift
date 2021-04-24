@@ -97,7 +97,16 @@ class ViewController: UIViewController {
                                   animations: {self.flowerImageView.image = UIImage(named: "wilt\(self.wrongGuessesRemaining)")})
                 { (_) in
                     // TO DO: change to next flower
-                    self.flowerImageView.image = UIImage(named: "flower\(self.wrongGuessesRemaining)")
+                    if self.wrongGuessesRemaining != 0 {
+                        self.flowerImageView.image = UIImage(named: "flower\(self.wrongGuessesRemaining)")
+                    } else {
+                        self.playSound(name: "word-not-guessed")
+                        UIView.transition(with: self.flowerImageView,
+                                          duration: 0.5,
+                                          options: .transitionCrossDissolve,
+                                          animations: {self.flowerImageView.image = UIImage(named: "flower\(self.wrongGuessesRemaining)")},
+                                          completion: nil)
+                    }
                 }
                 
                 self.playSound(name: "incorrect")
@@ -130,7 +139,6 @@ class ViewController: UIViewController {
         } else if wrongGuessesRemaining == 0 {
             gameStatusMessageLabel.text = "So sorry. You're all out of guesses"
             wordsMissedCount += 1
-            playSound(name: "word-not-guessed")
             updateAfterWinsOrLose()
         }
         
