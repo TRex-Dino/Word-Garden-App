@@ -90,16 +90,18 @@ class ViewController: UIViewController {
         if wordToGuess.contains(currentLetterGuessed) == false {
             wrongGuessesRemaining = wrongGuessesRemaining - 1
             
-            UIView.transition(with: flowerImageView,
-                              duration: 0.5,
-                              options: .transitionCrossDissolve,
-                              animations: {self.flowerImageView.image = UIImage(named: "wilt\(self.wrongGuessesRemaining)")})
-            { (_) in
-                // TO DO: change to next flower
-                self.flowerImageView.image = UIImage(named: "flower\(self.wrongGuessesRemaining)")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                UIView.transition(with: self.flowerImageView,
+                                  duration: 0.5,
+                                  options: .transitionCrossDissolve,
+                                  animations: {self.flowerImageView.image = UIImage(named: "wilt\(self.wrongGuessesRemaining)")})
+                { (_) in
+                    // TO DO: change to next flower
+                    self.flowerImageView.image = UIImage(named: "flower\(self.wrongGuessesRemaining)")
+                }
+                
+                self.playSound(name: "incorrect")
             }
-            
-            playSound(name: "incorrect")
         } else {
             playSound(name: "correct")
         }
